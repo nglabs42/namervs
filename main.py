@@ -48,11 +48,11 @@ def is_punycode(our_string):
         return True
 
 
-def decoded_punycode():
+def decoded_punycode(our_string):
     """Decodes punycode and returns decoded punycode if possible"""
 
     try:
-        translate = idna.decode(string)
+        translate = idna.decode(our_string)
         translate = translate.split(",")[0]
     except idna.InvalidCodepoint as e:
         elements = e.args

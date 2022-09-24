@@ -1,4 +1,3 @@
-grapejuice @ file:///home/peanuter/.cache/yay/grapejuice-git/src/grapejuice
 idna==3.4
 numpy==1.23.3
 pandas==1.5.0

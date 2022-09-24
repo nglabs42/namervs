@@ -171,3 +171,7 @@ def main():
     df =pd.DataFrame(done)
     df.to_csv(outputfile,index=None,encoding ="utf-16",sep=",")
     LOGGER.info("Done!")
+
+if __name__ == "__main__":
+    """This is executed when run from the command line"""
+    main()

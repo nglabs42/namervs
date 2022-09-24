@@ -18,6 +18,7 @@ def arg_collection():
     args = parser.parse_args()
     return args
 
+
 def setup_logging(loglevel):
     """Setup basic logging
 
@@ -31,6 +32,7 @@ def setup_logging(loglevel):
         datefmt="%Y-%m-%d %H:%M:%S",
         filename="/var/log/namerdbin.log",
     )
+
 
 def main():
     """Main function"""
@@ -141,7 +143,6 @@ def main():
                 templst.append("{x}")
                 templst.append(state)
                 templst.append(reserved)
-                templst.append(reserved)
                 if state == "OPENING":
                     templst.append(hoursUntilBidding)
                     templst.append("null")
@@ -172,7 +173,6 @@ def main():
             else:
                 templst.append(translate)
                 templst.append(state)
-                templst.append(reserved)
                 templst.append(reserved)
                 if state == "OPENING":
                     templst.append(hoursUntilBidding)
@@ -209,7 +209,6 @@ def main():
             reserved=subprocess.getoutput(f"hsd-cli rpc getnameinfo {x}|jq .start.reserved")
             templst.append(state)
             templst.append(reserved)
-            templst.append(reserved)
             if state == "OPENING":
                 templst.append(hoursUntilBidding)
                 templst.append("null")
@@ -242,7 +241,6 @@ def main():
             reserved=subprocess.getoutput(f"hsd-cli rpc getnameinfo {x}|jq .start.reserved")
             templst.append("{x}")
             templst.append(state)
-            templst.append(reserved)
             templst.append(reserved)
             if state == "OPENING":
                 templst.append(hoursUntilBidding)

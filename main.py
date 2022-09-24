@@ -10,9 +10,9 @@ import pandas as pd
 LOGGER = logging.getLogger(__name__)
 
 
-def arg_collection():
+def arg_collection(args):
     """This function is to collect the arguments from the user, includes help if help is triggered return help then exit"""
-
+    
     parser = argparse.ArgumentParser(
         description="This script will take a list of names and output the status of the names"
     )
@@ -37,7 +37,8 @@ def arg_collection():
         required=False,
         action="store_true",
     )
-    args = parser.parse_args()
+    return parser.parse_args(args)
+    
 
 
 def setup_logging(loglevel):
@@ -81,10 +82,10 @@ def decoded_punycode(our_string):
     return translate
 
 
-def main():
+def main(args):
     """Main function"""
 
-    our_arguments = arg_collection()
+    our_arguments = arg_collection(args)
     # collect filename and output file from argparse
     filename = our_arguments.input
     outputfile = our_arguments.output
@@ -211,5 +212,6 @@ def main():
         LOGGER.info("Done!")
 
 if __name__ == "__main__":
-    """This is executed when run from the command line"""
-    main()
+    """This is executed when run from the command line passing command line arguments to main function"""
+
+    main(sys.argv[1:])

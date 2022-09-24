@@ -70,7 +70,8 @@ def main():
                     templst.append("NA")
                     templst.append(state)
                     templst.append(reserved)
-                    hoursuntilbidding = subprocess.getoutput(f"hsd-cli rpc getnameinfo {x}|jq .info.stats.hoursUntilBidding")
+                    hoursuntilbidding = subprocess.getoutput(
+                        f"hsd-cli rpc getnameinfo {x}|jq .info.stats.hoursUntilBidding")
                     templst.append(hoursuntilbidding)
                     templst.append("null")
                     templst.append("null")
@@ -79,7 +80,7 @@ def main():
                     templst.append("NA")
                     templst.append(state)
                     templst.append(reserved)
-                    hoursuntilreveal  = subprocess.getoutput(f"hsd-cli rpc getnameinfo {x}|jq .stats.hoursUntilReveal")
+                    hoursuntilreveal = subprocess.getoutput(f"hsd-cli rpc getnameinfo {x}|jq .stats.hoursUntilReveal")
                     templst.append("null")
                     templst.append(hoursuntilreveal)
                     templst.append("null")
@@ -118,7 +119,8 @@ def main():
                     templst.append(translate)
                     templst.append(state)
                     templst.append(reserved)
-                    hoursuntilbidding = subprocess.getoutput(f"hsd-cli rpc getnameinfo {x}|jq .info.stats.hoursUntilBidding")
+                    hoursuntilbidding = subprocess.getoutput(
+                        f"hsd-cli rpc getnameinfo {x}|jq .info.stats.hoursUntilBidding")
                     templst.append(hoursuntilbidding)
                     templst.append("null")
                     templst.append("null")
@@ -127,7 +129,7 @@ def main():
                     templst.append(translate)
                     templst.append(state)
                     templst.append(reserved)
-                    hoursuntilreveal  = subprocess.getoutput(f"hsd-cli rpc getnameinfo {x}|jq .stats.hoursUntilReveal")
+                    hoursuntilreveal = subprocess.getoutput(f"hsd-cli rpc getnameinfo {x}|jq .stats.hoursUntilReveal")
                     templst.append("null")
                     templst.append(hoursuntilreveal)
                     templst.append("null")
@@ -173,7 +175,8 @@ def main():
                 templst.append(translate)
                 templst.append(state)
                 templst.append(reserved)
-                hoursuntilbidding = subprocess.getoutput(f"hsd-cli rpc getnameinfo {x}|jq .info.stats.hoursUntilBidding")
+                hoursuntilbidding = subprocess.getoutput(
+                    f"hsd-cli rpc getnameinfo {x}|jq .info.stats.hoursUntilBidding")
                 templst.append(hoursuntilbidding)
                 templst.append("null")
                 templst.append("null")
@@ -184,7 +187,7 @@ def main():
                 templst.append(translate)
                 templst.append(state)
                 templst.append(reserved)
-                hoursuntilreveal  = subprocess.getoutput(f"hsd-cli rpc getnameinfo {x}|jq .stats.hoursUntilReveal")
+                hoursuntilreveal = subprocess.getoutput(f"hsd-cli rpc getnameinfo {x}|jq .stats.hoursUntilReveal")
                 templst.append("null")
                 templst.append(hoursuntilreveal)
                 templst.append("null")
@@ -299,6 +302,7 @@ def main():
     df = pd.DataFrame(done)
     df.to_csv(outputfile, index=None, encoding="utf-16", sep=",")
     LOGGER.info("Done!")
+
 
 if __name__ == "__main__":
     """This is executed when run from the command line"""

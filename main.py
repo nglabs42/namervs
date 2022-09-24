@@ -11,8 +11,10 @@ LOGGER = logging.getLogger(__name__)
 
 
 def arg_collection():
-    """This function is to collect the arguments from the user"""
+    """This function is to collect the arguments from the user, includes help"""
     parser = argparse.ArgumentParser()
+    parser.add_argument("-h", "--help", help="Help")
+    parser.add_argument("-v", "--verbose", help="Verbose", action="store_true")
     parser.add_argument("-i", "--input", help="Input File name")
     parser.add_argument("-o", "--output", help="Output File name")
     args = parser.parse_args()
@@ -67,6 +69,12 @@ def main():
     # collect filename and output file from argparse
     filename = our_arguments.input
     outputfile = our_arguments.output
+    verbose = our_arguments.verbose
+
+    if verbose:
+        setup_logging(logging.DEBUG)
+    else:
+        setup_logging(logging.INFO)
 
     try:
         with open(filename) as f:

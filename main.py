@@ -11,14 +11,33 @@ LOGGER = logging.getLogger(__name__)
 
 
 def arg_collection():
-    """This function is to collect the arguments from the user, includes help"""
-    parser = argparse.ArgumentParser()
-    parser.add_argument("-h", "--help", help="Help")
-    parser.add_argument("-v", "--verbose", help="Verbose", action="store_true")
-    parser.add_argument("-i", "--input", help="Input File name")
-    parser.add_argument("-o", "--output", help="Output File name")
+    """This function is to collect the arguments from the user, includes help if help is triggered return help then exit"""
+
+    parser = argparse.ArgumentParser(
+        description="This script will take a list of names and output the status of the names"
+    )
+    parser.add_argument(
+        "-i",
+        "--input",
+        help="Input file containing list of names",
+        required=True,
+        type=str,
+    )
+    parser.add_argument(
+        "-o",
+        "--output",
+        help="Output file to write results to",
+        required=True,
+        type=str,
+    )
+    parser.add_argument(
+        "-v",
+        "--verbose",
+        help="Verbose output, will log to /var/log/namerdbin.log",
+        required=False,
+        action="store_true",
+    )
     args = parser.parse_args()
-    return args
 
 
 def setup_logging(loglevel):

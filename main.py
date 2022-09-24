@@ -56,7 +56,7 @@ def main():
         LOGGER.error("Input File is empty")
         sys.exit(1)
 
-    our_translated = dict()
+    translated = {}
     done = {}
     templst = []
     for x in data:
@@ -156,14 +156,12 @@ def main():
             translated[x] = templst
             templst = []
 
-    translated = {"name": translated.keys()
-        , "decoded_punycode": [a[0] for a in translated.values()]
-        , "status": [a[1] for a in translated.values()]
-        , "reserved": [a[2] for a in translated.values()]
-        , "hoursuntilbidding": [a[3] for a in translated.values()]
-        , "hoursuntilreveal": [a[4] for a in translated.values()]
-        , "hoursuntilclose": [a[5] for a in translated.values()]
-        , "daysuntilexpire": [a[6] for a in translated.values()]}
+    translated = {"name": translated.keys(), "decoded_punycode": [a[0] for a in translated.values()],
+                  "status": [a[1] for a in translated.values()], "reserved": [a[2] for a in translated.values()],
+                  "hoursuntilbidding": [a[3] for a in translated.values()],
+                  "hoursuntilreveal": [a[4] for a in translated.values()],
+                  "hoursuntilclose": [a[5] for a in translated.values()],
+                  "daysuntilexpire": [a[6] for a in translated.values()]}
     nlst = []
 
     for key, value in translated.items():
@@ -173,7 +171,7 @@ def main():
         nlst = []
 
     df = pd.DataFrame(done)
-    df.to_csv(outputfile, index=None, encoding="utf-16", sep=",")
+    df.to_csv(outputfile, index=None, encoding="utf-8", sep=",")
     LOGGER.info("Done!")
 
 

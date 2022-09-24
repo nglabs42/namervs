@@ -63,98 +63,224 @@ def main():
         try:
             translate = idna.decode(x)
             translate = translate.split(",")[0]
-            state = subprocess.getoutput(
-                f"hsd-cli rpc getnameinfo {x}|jq .info.state")
-            reserved = subprocess.getoutput(f"hsd-cli rpc getnameinfo {x}|jq .start.reserved")
-            hoursuntilbidding = subprocess.getoutput(f"hsd-cli rpc getnameinfo {x}|jq .info.stats.hoursUntilBidding")
-            hoursuntilreveal = subprocess.getoutput(f"hsd-cli rpc getnameinfo {x}|jq .stats.hoursUntilReveal")
-            hoursuntilclose = subprocess.getoutput(f"hsd-cli rpc getnameinfo {x}|jq .info.stats.hoursUntilClose")
-            daysuntilexpire = subprocess.getoutput(f"hsd-cli rpc getnameinfo {x} |jq .info.stats.daysUntilExpire")
-            if x[:4] != "xn--":
-                templst.append("NA")
-                templst.append(state)
-                templst.append(reserved)
-                templst.append(hoursuntilbidding)
-                templst.append(hoursuntilreveal)
-                templst.append(hoursuntilclose)
-                templst.append(daysuntilexpire)
-                translated[x] = templst
-                templst = []
-            else:
-                templst.append(translate)
-                templst.append(state)
-                templst.append(reserved)
-                templst.append(hoursuntilbidding)
-                templst.append(hoursuntilreveal)
-                templst.append(hoursuntilclose)
-                templst.append(daysuntilexpire)
-                translated[x] = templst
-                templst = []
-        except idna.InvalidCodepoint as e:
-            elements = e.args
-            translate = elements[0].split("\'")[1]
-            templst.append(translate)
-            state = subprocess.getoutput(
-                f"hsd-cli rpc getnameinfo {x}|jq .info.state")
-            reserved = subprocess.getoutput(f"hsd-cli rpc getnameinfo {x}|jq .start.reserved")
-            hoursuntilbidding = subprocess.getoutput(f"hsd-cli rpc getnameinfo {x}|jq .info.stats.hoursUntilBidding")
-            hoursuntilreveal = subprocess.getoutput(f"hsd-cli rpc getnameinfo {x}|jq .stats.hoursUntilReveal")
-            hoursuntilclose = subprocess.getoutput(f"hsd-cli rpc getnameinfo {x}|jq .info.stats.hoursUntilClose")
-            daysuntilexpire = subprocess.getoutput(f"hsd-cli rpc getnameinfo {x} |jq .info.stats.daysUntilExpire")
-            if x[:4] != "xn--":
-                templst.append("NA")
-                templst.append(state)
-                templst.append(reserved)
-                templst.append(hoursuntilbidding)
-                templst.append(hoursuntilreveal)
-                templst.append(hoursuntilclose)
-                templst.append(daysuntilexpire)
-                translated[x] = templst
-                templst = []
-            else:
-                templst.append(translate)
-                templst.append(state)
-                templst.append(reserved)
-                templst.append(hoursuntilbidding)
-                templst.append(hoursuntilreveal)
-                templst.append(hoursuntilclose)
-                templst.append(daysuntilexpire)
-                translated[x] = templst
-                templst = []
-        except idna.InvalidCodepoint as e:
-            elements = e.args
-            translate = elements[0].split("\'")[1]
-            templst.append(translate)
             state = subprocess.getoutput(f"hsd-cli rpc getnameinfo {x}|jq .info.state")
             reserved = subprocess.getoutput(f"hsd-cli rpc getnameinfo {x}|jq .start.reserved")
-            hoursuntilbidding = subprocess.getoutput(f"hsd-cli rpc getnameinfo {x}|jq .info.stats.hoursUntilBidding")
-            hoursuntilreveal = subprocess.getoutput(f"hsd-cli rpc getnameinfo {x}|jq .stats.hoursUntilReveal")
-            hoursuntilclose = subprocess.getoutput(f"hsd-cli rpc getnameinfo {x}|jq .info.stats.hoursUntilClose")
-            daysuntilexpire = subprocess.getoutput(f"hsd-cli rpc getnameinfo {x} |jq .info.stats.daysUntilExpire")
-            templst.append(state)
-            templst.append(reserved)
-            templst.append(hoursuntilbidding)
-            templst.append(hoursuntilreveal)
-            templst.append(hoursuntilclose)
-            templst.append(daysuntilexpire)
-            translated[x] = templst
-            templst = []
+            if x[:4] != "xn--":
+                if state == "OPENING":
+                    templst.append("NA")
+                    templst.append(state)
+                    templst.append(reserved)
+                    hoursuntilbidding = subprocess.getoutput(f"hsd-cli rpc getnameinfo {x}|jq .info.stats.hoursUntilBidding")
+                    templst.append(hoursuntilbidding)
+                    templst.append("null")
+                    templst.append("null")
+                    templst.append("null")
+                elif state == "BIDDING":
+                    templst.append("NA")
+                    templst.append(state)
+                    templst.append(reserved)
+                    hoursuntilreveal  = subprocess.getoutput(f"hsd-cli rpc getnameinfo {x}|jq .stats.hoursUntilReveal")
+                    templst.append("null")
+                    templst.append(hoursuntilreveal)
+                    templst.append("null")
+                    templst.append("null")
+                elif state == "REVEAL":
+                    templst.append("NA")
+                    templst.append(state)
+                    templst.append(reserved)
+                    hoursuntilclose = subprocess.getoutput(f"hsd-cli rpc getnameinfo {x}|jq .stats.hoursUntilClose")
+                    templst.append("null")
+                    templst.append("null")
+                    templst.append(hoursuntilclose)
+                    templst.append("null")
+                elif state == "CLOSED":
+                    templst.append("NA")
+                    templst.append(state)
+                    templst.append(reserved)
+                    daysuntilexpire = subprocess.getoutput(f"hsd-cli rpc getnameinfo {x}|jq .stats.daysUntilRedeem")
+                    templst.append("null")
+                    templst.append("null")
+                    templst.append("null")
+                    templst.append(daysuntilexpire)
+                else:
+                    templst.append("NA")
+                    templst.append(state)
+                    templst.append(reserved)
+                    templst.append("null")
+                    templst.append("null")
+                    templst.append("null")
+                    templst.append("null")
+                translated[x] = templst
+                templst = []
+            else:
+
+                if state == "OPENING":
+                    templst.append(translate)
+                    templst.append(state)
+                    templst.append(reserved)
+                    hoursuntilbidding = subprocess.getoutput(f"hsd-cli rpc getnameinfo {x}|jq .info.stats.hoursUntilBidding")
+                    templst.append(hoursuntilbidding)
+                    templst.append("null")
+                    templst.append("null")
+                    templst.append("null")
+                elif state == "BIDDING":
+                    templst.append(translate)
+                    templst.append(state)
+                    templst.append(reserved)
+                    hoursuntilreveal  = subprocess.getoutput(f"hsd-cli rpc getnameinfo {x}|jq .stats.hoursUntilReveal")
+                    templst.append("null")
+                    templst.append(hoursuntilreveal)
+                    templst.append("null")
+                    templst.append("null")
+                elif state == "REVEAL":
+                    templst.append(translate)
+                    templst.append(state)
+                    templst.append(reserved)
+                    hoursuntilclose = subprocess.getoutput(f"hsd-cli rpc getnameinfo {x}|jq .stats.hoursUntilClose")
+                    templst.append("null")
+                    templst.append("null")
+                    templst.append(hoursuntilclose)
+                    templst.append("null")
+                    translated[x] = templst
+                    templst = []
+                elif state == "CLOSED":
+                    templst.append(translate)
+                    templst.append(state)
+                    templst.append(reserved)
+                    daysuntilexpire = subprocess.getoutput(f"hsd-cli rpc getnameinfo {x}|jq .stats.daysUntilRedeem")
+                    templst.append("null")
+                    templst.append("null")
+                    templst.append("null")
+                    templst.append(daysuntilexpire)
+                    translated[x] = templst
+                    templst = []
+                else:
+                    templst.append(translate)
+                    templst.append(state)
+                    templst.append(reserved)
+                    templst.append("null")
+                    templst.append("null")
+                    templst.append("null")
+                    templst.append("null")
+                    translated[x] = templst
+                    templst = []
+        except idna.InvalidCodepoint as e:
+            elements = e.args
+            translate = elements[0].split("\'")[1]
+            state = subprocess.getoutput(f"hsd-cli rpc getnameinfo {x}|jq .info.state")
+            reserved = subprocess.getoutput(f"hsd-cli rpc getnameinfo {x}|jq .start.reserved")
+            if state == "OPENING":
+                templst.append(translate)
+                templst.append(state)
+                templst.append(reserved)
+                hoursuntilbidding = subprocess.getoutput(f"hsd-cli rpc getnameinfo {x}|jq .info.stats.hoursUntilBidding")
+                templst.append(hoursuntilbidding)
+                templst.append("null")
+                templst.append("null")
+                templst.append("null")
+                translated[x] = templst
+                templst = []
+            elif state == "BIDDING":
+                templst.append(translate)
+                templst.append(state)
+                templst.append(reserved)
+                hoursuntilreveal  = subprocess.getoutput(f"hsd-cli rpc getnameinfo {x}|jq .stats.hoursUntilReveal")
+                templst.append("null")
+                templst.append(hoursuntilreveal)
+                templst.append("null")
+                templst.append("null")
+                translated[x] = templst
+                templst = []
+            elif state == "REVEAL":
+                templst.append(translate)
+                templst.append(state)
+                templst.append(reserved)
+                hoursuntilclose = subprocess.getoutput(f"hsd-cli rpc getnameinfo {x}|jq .stats.hoursUntilClose")
+                templst.append("null")
+                templst.append("null")
+                templst.append(hoursuntilclose)
+                templst.append("null")
+                translated[x] = templst
+                templst = []
+            elif state == "CLOSED":
+                templst.append(translate)
+                templst.append(state)
+                templst.append(reserved)
+                daysuntilexpire = subprocess.getoutput(f"hsd-cli rpc getnameinfo {x}|jq .stats.daysUntilRedeem")
+                templst.append("null")
+                templst.append("null")
+                templst.append("null")
+                templst.append(daysuntilexpire)
+                translated[x] = templst
+                templst = []
+            else:
+                templst.append(translate)
+                templst.append(state)
+                templst.append(reserved)
+                templst.append("null")
+                templst.append("null")
+                templst.append("null")
+                templst.append("null")
+                translated[x] = templst
+                templst = []
         except Exception as e:
             state = subprocess.getoutput(f"hsd-cli rpc getnameinfo {x}|jq .info.state")
             reserved = subprocess.getoutput(f"hsd-cli rpc getnameinfo {x}|jq .start.reserved")
-            hoursuntilbidding = subprocess.getoutput(f"hsd-cli rpc getnameinfo {x}|jq .info.stats.hoursUntilBidding")
-            hoursuntilreveal = subprocess.getoutput(f"hsd-cli rpc getnameinfo {x}|jq .stats.hoursUntilReveal")
-            hoursuntilclose = subprocess.getoutput(f"hsd-cli rpc getnameinfo {x}|jq .info.stats.hoursUntilClose")
-            daysuntilexpire = subprocess.getoutput(f"hsd-cli rpc getnameinfo {x} |jq .info.stats.daysUntilExpire")
-            templst.append("Invalid")
-            templst.append(state)
-            templst.append(reserved)
-            templst.append(hoursuntilbidding)
-            templst.append(hoursuntilreveal)
-            templst.append(hoursuntilclose)
-            templst.append(daysuntilexpire)
-            translated[x] = templst
-            templst = []
+            if state == "OPENING":
+                templst.append("Invalid")
+                templst.append(state)
+                templst.append(reserved)
+                hoursuntilbidding = subprocess.getoutput(
+                    f"hsd-cli rpc getnameinfo {x}|jq .info.stats.hoursUntilBidding")
+                templst.append(hoursuntilbidding)
+                templst.append("null")
+                templst.append("null")
+                templst.append("null")
+                translated[x] = templst
+                templst = []
+            elif state == "BIDDING":
+                templst.append("Invalid")
+                templst.append(state)
+                templst.append(reserved)
+                hoursuntilreveal = subprocess.getoutput(f"hsd-cli rpc getnameinfo {x}|jq .stats.hoursUntilReveal")
+                templst.append("null")
+                templst.append(hoursuntilreveal)
+                templst.append("null")
+                templst.append("null")
+                translated[x] = templst
+                templst = []
+            elif state == "REVEAL":
+                templst.append("Invalid")
+                templst.append(state)
+                templst.append(reserved)
+                hoursuntilclose = subprocess.getoutput(f"hsd-cli rpc getnameinfo {x}|jq .stats.hoursUntilClose")
+                templst.append("null")
+                templst.append("null")
+                templst.append(hoursuntilclose)
+                templst.append("null")
+                translated[x] = templst
+                templst = []
+            elif state == "CLOSED":
+                templst.append("Invalid")
+                templst.append(state)
+                templst.append(reserved)
+                daysuntilexpire = subprocess.getoutput(f"hsd-cli rpc getnameinfo {x}|jq .stats.daysUntilRedeem")
+                templst.append("null")
+                templst.append("null")
+                templst.append("null")
+                templst.append(daysuntilexpire)
+                translated[x] = templst
+                templst = []
+            else:
+                templst.append("Invalid")
+                templst.append(state)
+                templst.append(reserved)
+                templst.append("null")
+                templst.append("null")
+                templst.append("null")
+                templst.append("null")
+                translated[x] = templst
+                templst = []
 
     translated = {"name": translated.keys(), "decoded_punycode": [a[0] for a in translated.values()],
                   "status": [a[1] for a in translated.values()], "reserved": [a[2] for a in translated.values()],
@@ -171,9 +297,8 @@ def main():
         nlst = []
 
     df = pd.DataFrame(done)
-    df.to_csv(outputfile, index=None, encoding="utf-8", sep=",")
+    df.to_csv(outputfile, index=None, encoding="utf-16", sep=",")
     LOGGER.info("Done!")
-
 
 if __name__ == "__main__":
     """This is executed when run from the command line"""

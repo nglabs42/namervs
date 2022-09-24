@@ -46,6 +46,8 @@ def is_punycode(our_string):
         return False
     else:
         return True
+
+
 def decoded_punycode():
     """Decodes punycode and returns decoded punycode if possible"""
 
@@ -54,7 +56,7 @@ def decoded_punycode():
         translate = translate.split(",")[0]
     except idna.InvalidCodepoint as e:
         elements = e.args
-    translate = elements[0].split("\'")[1]
+    translate = elements[0].split("'")[1]
     return translate
 
 
@@ -80,6 +82,10 @@ def main():
         LOGGER.error("Input File is empty")
         sys.exit(1)
 
+    if data == "":
+        LOGGER.error("Input File is empty")
+        sys.exit(1)
+
     translated = {}
     done = {}
     templst = []
@@ -88,15 +94,17 @@ def main():
             translate("NA")
         else:
             translate = decoded_punycode(x)
-        state = subprocess.getoutput(
-            f"""hsd-cli rpc getnameinfo {x}|jq .info.state""")
+        state = subprocess.getoutput(f"""hsd-cli rpc getnameinfo {x}|jq .info.state""")
         reserved = subprocess.getoutput(
-            f"""hsd-cli rpc getnameinfo {x}|jq .start.reserved""")
+            f"""hsd-cli rpc getnameinfo {x}|jq .start.reserved"""
+        )
         if state == "OPENING":
             templst.append(translate)
             templst.append(state)
             templst.append(reserved)
-            hoursuntilbidding = subprocess.getoutput(f"""hsd-cli rpc getnameinfo {x}|jq .info.stats.hoursUntilBidding""")
+            hoursuntilbidding = subprocess.getoutput(
+                f"""hsd-cli rpc getnameinfo {x}|jq .info.stats.hoursUntilBidding"""
+            )
             templst.append(hoursuntilbidding)
             templst.append("null")
             templst.append("null")
@@ -107,7 +115,9 @@ def main():
             templst.append(translate)
             templst.append(state)
             templst.append(reserved)
-            hoursuntilreveal = subprocess.getoutput(f"""hsd-cli rpc getnameinfo {x}|jq .stats.hoursUntilReveal""")
+            hoursuntilreveal = subprocess.getoutput(
+                f"""hsd-cli rpc getnameinfo {x}|jq .stats.hoursUntilReveal"""
+            )
             templst.append("null")
             templst.append(hoursuntilreveal)
             templst.append("null")
@@ -118,7 +128,9 @@ def main():
             templst.append(translate)
             templst.append(state)
             templst.append(reserved)
-            hoursuntilclose = subprocess.getoutput(f"""hsd-cli rpc getnameinfo {x}|jq .stats.hoursUntilClose""")
+            hoursuntilclose = subprocess.getoutput(
+                f"""hsd-cli rpc getnameinfo {x}|jq .stats.hoursUntilClose"""
+            )
             templst.append("null")
             templst.append("null")
             templst.append(hoursuntilclose)
@@ -129,7 +141,9 @@ def main():
             templst.append(translate)
             templst.append(state)
             templst.append(reserved)
-            daysuntilexpire = subprocess.getoutput(f"""hsd-cli rpc getnameinfo {x}|jq .stats.daysUntilRedeem""")
+            daysuntilexpire = subprocess.getoutput(
+                f"""hsd-cli rpc getnameinfo {x}|jq .stats.daysUntilRedeem"""
+            )
             templst.append("null")
             templst.append("null")
             templst.append("null")
@@ -147,26 +161,28 @@ def main():
             translated[x] = templst
             templst = []
 
-
-translated = {"name": translated.keys(), "decoded_punycode": [a[0] for a in translated.values()],
-                  "status": [a[1] for a in translated.values()], "reserved": [a[2] for a in translated.values()],
-                  "hoursuntilbidding": [a[3] for a in translated.values()],
-                  "hoursuntilreveal": [a[4] for a in translated.values()],
-                  "hoursuntilclose": [a[5] for a in translated.values()],
-                  "daysuntilexpire": [a[6] for a in translated.values()]}
-nlst = []
-
-for key, value in translated.items():
-    for i in value:
-        nlst.append(i)
-    done[key] = nlst
+    translated = {
+        "name": translated.keys(),
+        "decoded_punycode": [a[0] for a in translated.values()],
+        "status": [a[1] for a in translated.values()],
+        "reserved": [a[2] for a in translated.values()],
+        "hoursuntilbidding": [a[3] for a in translated.values()],
+        "hoursuntilreveal": [a[4] for a in translated.values()],
+        "hoursuntilclose": [a[5] for a in translated.values()],
+        "daysuntilexpire": [a[6] for a in translated.values()],
+    }
     nlst = []
 
-    df = pd.DataFrame(done)
-    df.to_csv(outputfile, index=None, encoding="utf-16", sep=",")
-    LOGGER.info("Done!")
+    for key, value in translated.items():
+        for i in value:
+            nlst.append(i)
+        done[key] = nlst
+        nlst = []
 
+        df = pd.DataFrame(done)
+        df.to_csv(outputfile, index=None, encoding="utf-16", sep=",")
+        LOGGER.info("Done!")
 
-if __name__ == "__main__":
-    """This is executed when run from the command line"""
-    main()
+    if __name__ == "__main__":
+        """This is executed when run from the command line"""
+        main()

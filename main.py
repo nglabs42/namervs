@@ -123,7 +123,7 @@ def main(args):
             translate = decoded_punycode(x)
         else:
             translate = ("NA")
-        state = subprocess.getoutput(f"""hsd-cli rpc getnameinfo {x}|jq .info.state""")
+        state = subprocess.getoutput(f"hsd-cli rpc getnameinfo {x}|jq .info.state")
         reserved = subprocess.getoutput(
             f"""hsd-cli rpc getnameinfo {x}|jq .start.reserved"""
         )
@@ -133,7 +133,7 @@ def main(args):
             templst.append(state)
             templst.append(reserved)
             hoursuntilbidding = subprocess.getoutput(
-                f"""hsd-cli rpc getnameinfo {x}|jq .info.stats.hoursUntilBidding"""
+                f"hsd-cli rpc getnameinfo {x}|jq .info.stats.hoursUntilBidding"
             )
             templst.append(hoursuntilbidding)
             templst.append("null")
@@ -146,7 +146,7 @@ def main(args):
             templst.append(state)
             templst.append(reserved)
             hoursuntilreveal = subprocess.getoutput(
-                f"""hsd-cli rpc getnameinfo {x}|jq .info.stats.hoursUntilReveal"""
+                f"hsd-cli rpc getnameinfo {x}|jq .info.stats.hoursUntilReveal"
             )
             templst.append("null")
             templst.append(hoursuntilreveal)
@@ -159,7 +159,7 @@ def main(args):
             templst.append(state)
             templst.append(reserved)
             hoursuntilclose = subprocess.getoutput(
-                f"""hsd-cli rpc getnameinfo {x}|jq .info.stats.hoursUntilClose"""
+                f"hsd-cli rpc getnameinfo {x}|jq .info.stats.hoursUntilClose"
             )
             templst.append("null")
             templst.append("null")
@@ -172,7 +172,7 @@ def main(args):
             templst.append(state)
             templst.append(reserved)
             daysuntilexpire = subprocess.getoutput(
-                f"""hsd-cli rpc getnameinfo {x}|jq .info.stats.daysUntilExpire"""
+                f"hsd-cli rpc getnameinfo {x}|jq .info.stats.daysUntilExpire"
             )
             templst.append("null")
             templst.append("null")

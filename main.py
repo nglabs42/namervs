@@ -98,19 +98,83 @@ def default_name_data(x):
 
 
 # This function will capture data points for "OPENING" auctions
-# def open_state(x, traslate, state, reserved)
-#   """Capturing and Writing Data for "OPENING" State for {x}"""
-#   templst.append(translate)
-#   templst.append(state)
-#   templst.append(reserved)
-#   hoursuntilbidding = subprocess.getoutput(
-#   f"hsd-cli rpc getnameinfo {x}|jq .info.stats.hoursUntilBidding"
-#   )
-#   templst.append(hoursuntilbidding)
-#   templst.append("")
-#   templst.append("")
-#   templst.append("")
-#   return templst
+def open_state(x, translate, state, reserved):
+    """Capturing and Writing Data for "OPENING" State for {x}"""
+    templst = list()
+    templst.append(translate)
+    templst.append(state)
+    templst.append(reserved)
+    hoursuntilbidding = subprocess.getoutput(
+        f"hsd-cli rpc getnameinfo {x}|jq .info.stats.hoursUntilBidding"
+    )
+    templst.append(hoursuntilbidding)
+    templst.append("")
+    templst.append("")
+    templst.append("")
+    return templst
+
+
+def bidding_state(x, translate, state, reserved):
+    """Capturing and Writing Data for "BIDDING" State for {x}"""
+    templst = list()
+    templst.append(translate)
+    templst.append(state)
+    templst.append(reserved)
+    hoursuntilreveal = subprocess.getoutput(
+        f"hsd-cli rpc getnameinfo {x}|jq .info.stats.hoursUntilReveal"
+    )
+    templst.append("")
+    templst.append(hoursuntilreveal)
+    templst.append("")
+    templst.append("")
+    return templst
+
+
+def reveal_state(x, translate, state, reserved):
+    """Capturing and Writing Data for "REVEAL" State for {x}"""
+    templst = list()
+    templst.append(translate)
+    templst.append(state)
+    templst.append(reserved)
+    hoursuntilclose = subprocess.getoutput(
+        f"hsd-cli rpc getnameinfo {x}|jq .info.stats.hoursUntilClose"
+    )
+    templst.append("")
+    templst.append("")
+    templst.append(hoursuntilclose)
+    templst.append("")
+    return templst
+
+
+def closed_state(x, translate, state, reserved):
+    """Capturing and Writing Data for "CLOSED" State for {x}"""
+    templst = list()
+    templst.append(translate)
+    templst.append(state)
+    templst.append(reserved)
+    daysuntilexpire = subprocess.getoutput(
+        f"hsd-cli rpc getnameinfo {x}|jq .info.stats.daysUntilExpire"
+    )
+    templst.append("")
+    templst.append("")
+    templst.append("")
+    templst.append(daysuntilexpire)
+    return templst
+
+
+def no_state(translate, state, reserved):
+    """Capturing and Writing Data for "NO STATE" State for {x}"""
+    templst = list()
+    templst.append(translate)
+    templst.append(state)
+    templst.append(reserved)
+    templst.append("")
+    templst.append("")
+    templst.append("")
+    templst.append("")
+    return templst
+
+
 def main(args):
     """Main function"""
 
@@ -145,87 +209,38 @@ def main(args):
 
     translated = {}
     done = {}
-    templst = []
     for x in data:
         if is_punycode(x):
+            # if x is punycode decode it and store as translate or pass x to translate
             translate = decoded_punycode(x)
         else:
             translate = x
-
         # Capture default data for all names State and Reserved
         state, reserved = default_name_data(x)
-
+        # for "OPENING" state
         if state == '"OPENING"':
-            # remove below and replace with function
-            templst.append(translate)
-            templst.append(state)
-            templst.append(reserved)
-            hoursuntilbidding = subprocess.getoutput(
-                f"hsd-cli rpc getnameinfo {x}|jq .info.stats.hoursUntilBidding"
-            )
-            templst.append(hoursuntilbidding)
-            templst.append("")
-            templst.append("")
-            templst.append("")
+            # call "OPENING" function
+            templst = open_state(x, translate, state, reserved)
             translated[x] = templst
-            templst = []
-            #
-            #  remove above and uncomment below
-            # templst = open_state(x, translate, state, reserved):
-            # translated[x] = templst
-            # templst = []
-            #
+        # for "BIDDING" state
         elif state == '"BIDDING"':
-            templst.append(translate)
-            templst.append(state)
-            templst.append(reserved)
-            hoursuntilreveal = subprocess.getoutput(
-                f"hsd-cli rpc getnameinfo {x}|jq .info.stats.hoursUntilReveal"
-            )
-            templst.append("")
-            templst.append(hoursuntilreveal)
-            templst.append("")
-            templst.append("")
+            # call "BIDDING" function
+            templst = bidding_state(x, translate, state, reserved)
             translated[x] = templst
-            templst = []
+        # for "REVEAL" state
         elif state == '"REVEAL"':
-            templst.append(translate)
-            templst.append(state)
-            templst.append(reserved)
-            hoursuntilclose = subprocess.getoutput(
-                f"hsd-cli rpc getnameinfo {x}|jq .info.stats.hoursUntilClose"
-            )
-            templst.append("")
-            templst.append("")
-            templst.append(hoursuntilclose)
-            templst.append("")
+            templst = reveal_state(x, translate, state, reserved)
             translated[x] = templst
-            templst = []
+        # for "CLOSED" state
         elif state == '"CLOSED"':
-            templst.append(translate)
-            templst.append(state)
-            templst.append(reserved)
-            daysuntilexpire = subprocess.getoutput(
-                f"hsd-cli rpc getnameinfo {x}|jq .info.stats.daysUntilExpire"
-            )
-            templst.append("")
-            templst.append("")
-            templst.append("")
-            templst.append(daysuntilexpire)
+            # call "CLOSED" function
+            templst = closed_state(x, translate, state, reserved)
             translated[x] = templst
-            templst = []
+        # for all other stateor no data
         else:
-            #
-            templst.append(translate)
-            templst.append(state)
-            templst.append(reserved)
-            templst.append("")
-            templst.append("")
-            templst.append("")
-            templst.append("")
+            # for "NO STATE" or unknown states
+            templst = no_state(translate, state, reserved)
             translated[x] = templst
-            templst = []
-
     translated = {
         "name": translated.keys(),
         "decoded_punycode": [a[0] for a in translated.values()],

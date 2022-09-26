@@ -14,7 +14,7 @@ def arg_collection(args):
     """This function is to collect the arguments
         from the user, includes help if help is triggered
         return help then exit"""
-    
+
     parser = argparse.ArgumentParser(
         description="This script will take a list of names and output the status of the names"
     )
@@ -41,7 +41,6 @@ def arg_collection(args):
         action="store_true",
     )
     return parser.parse_args(args)
-    
 
 
 def setup_logging(loglevel):
@@ -84,6 +83,20 @@ def decoded_punycode(our_string):
         translate = elements[0].split("\'")[1]
     return translate
 
+
+def default_name_data(x):
+    """Run hsd-cli to capture state and reserved status of name"""
+    # in the future this will run once to capture each names data and parse from there
+    # using hsd-cli rpc getnameinfo {x} --json
+    state = subprocess.getoutput(
+        f"hsd-cli rpc getnameinfo {x}|jq .info.state"
+    )
+    reserved = subprocess.getoutput(
+        f"hsd-cli rpc getnameinfo {x}|jq .start.reserved"
+    )
+    return state, reserved
+
+
 # This function will capture data points for "OPENING" auctions
 # def open_state(x, traslate, state, reserved)
 #   """Capturing and Writing Data for "OPENING" State for {x}"""
@@ -94,9 +107,9 @@ def decoded_punycode(our_string):
 #   f"hsd-cli rpc getnameinfo {x}|jq .info.stats.hoursUntilBidding"
 #   )
 #   templst.append(hoursuntilbidding)
-#   templst.append("null")
-#   templst.append("null")
-#   templst.append("null")
+#   templst.append("")
+#   templst.append("")
+#   templst.append("")
 #   return templst
 def main(args):
     """Main function"""
@@ -137,21 +150,13 @@ def main(args):
         if is_punycode(x):
             translate = decoded_punycode(x)
         else:
-            translate = (x)
-        # Pull hsd-cli rpc getnameinfo {x} and parse for state and reserved.
-        # Move this to one pull getnameinfo for each name
-        # and parse.
-        #
-        state = subprocess.getoutput(
-            f"hsd-cli rpc getnameinfo {x}|jq .info.state"
-        )
-        reserved = subprocess.getoutput(
-            f"hsd-cli rpc getnameinfo {x}|jq .start.reserved"
-        )
-        #
-        #
-        #
+            translate = x
+
+        # Capture default data for all names State and Reserved
+        state, reserved = default_name_data(x)
+
         if state == '"OPENING"':
+            # remove below and replace with function
             templst.append(translate)
             templst.append(state)
             templst.append(reserved)
@@ -245,6 +250,7 @@ def main(args):
         df.to_csv(outputfile, index=None, encoding="utf-16", sep=",")
 
         LOGGER.info("Done!")
+
 
 if __name__ == "__main__":
     """This is executed when run from the command line passing command line arguments to main function"""

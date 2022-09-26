@@ -123,9 +123,11 @@ def main(args):
             translate = decoded_punycode(x)
         else:
             translate = ("NA")
-        state = subprocess.getoutput(f"hsd-cli rpc getnameinfo {x}|jq .info.state")
+        state = subprocess.getoutput(
+            f"hsd-cli rpc getnameinfo {x}|jq .info.state"
+        )
         reserved = subprocess.getoutput(
-            f"""hsd-cli rpc getnameinfo {x}|jq .start.reserved"""
+            f"hsd-cli rpc getnameinfo {x}|jq .start.reserved"
         )
         if state == '"OPENING"':
             # open
@@ -181,6 +183,7 @@ def main(args):
             translated[x] = templst
             templst = []
         else:
+            #
             templst.append(translate)
             templst.append(state)
             templst.append(reserved)

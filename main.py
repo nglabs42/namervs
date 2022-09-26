@@ -172,7 +172,7 @@ def main(args):
             templst.append(state)
             templst.append(reserved)
             daysuntilexpire = subprocess.getoutput(
-                f"""hsd-cli rpc getnameinfo {x}|jq .info.stats.daysUntilRedeem"""
+                f"""hsd-cli rpc getnameinfo {x}|jq .info.stats.daysUntilExpire"""
             )
             templst.append("null")
             templst.append("null")
@@ -182,6 +182,7 @@ def main(args):
             templst = []
         else:
             templst.append(translate)
+            templst.append(state)
             templst.append(reserved)
             templst.append("null")
             templst.append("null")
@@ -198,7 +199,7 @@ def main(args):
         "hoursuntilbidding": [a[3] for a in translated.values()],
         "hoursuntilreveal": [a[4] for a in translated.values()],
         "hoursuntilclose": [a[5] for a in translated.values()],
-        "daysuntilexpire": [a[6] for a in translated.values()],
+        "daysuntilexpire": [a[6] for a in translated.values()]
     }
     nlst = []
 

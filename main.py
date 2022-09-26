@@ -24,6 +24,7 @@ def arg_collection(args):
         type=str,
     )
     parser.add_argument(
+        #  update to be required if -c/--csv is used
         "-o",
         "--output",
         help="Output file to write results to",
@@ -78,7 +79,7 @@ def decoded_punycode(our_string):
         translate = translate.split(",")[0]
     except idna.InvalidCodepoint as e:
         elements = e.args
-    translate = elements[0].split("'")[1]
+        translate = elements[0].split("\'")[1]
     return translate
 
 
@@ -119,14 +120,15 @@ def main(args):
     templst = []
     for x in data:
         if is_punycode(x):
-            translate("NA")
-        else:
             translate = decoded_punycode(x)
+        else:
+            translate = ("NA")
         state = subprocess.getoutput(f"""hsd-cli rpc getnameinfo {x}|jq .info.state""")
         reserved = subprocess.getoutput(
             f"""hsd-cli rpc getnameinfo {x}|jq .start.reserved"""
         )
         if state == "OPENING":
+            # open
             templst.append(translate)
             templst.append(state)
             templst.append(reserved)
@@ -144,7 +146,7 @@ def main(args):
             templst.append(state)
             templst.append(reserved)
             hoursuntilreveal = subprocess.getoutput(
-                f"""hsd-cli rpc getnameinfo {x}|jq .stats.hoursUntilReveal"""
+                f"""hsd-cli rpc getnameinfo {x}|jq .info.stats.hoursUntilReveal"""
             )
             templst.append("null")
             templst.append(hoursuntilreveal)
@@ -157,7 +159,7 @@ def main(args):
             templst.append(state)
             templst.append(reserved)
             hoursuntilclose = subprocess.getoutput(
-                f"""hsd-cli rpc getnameinfo {x}|jq .stats.hoursUntilClose"""
+                f"""hsd-cli rpc getnameinfo {x}|jq .info.stats.hoursUntilClose"""
             )
             templst.append("null")
             templst.append("null")
@@ -170,7 +172,7 @@ def main(args):
             templst.append(state)
             templst.append(reserved)
             daysuntilexpire = subprocess.getoutput(
-                f"""hsd-cli rpc getnameinfo {x}|jq .stats.daysUntilRedeem"""
+                f"""hsd-cli rpc getnameinfo {x}|jq .info.stats.daysUntilRedeem"""
             )
             templst.append("null")
             templst.append("null")
@@ -208,7 +210,10 @@ def main(args):
         nlst = []
 
         df = pd.DataFrame(done)
+        # if -c/--cvs is set write to csv outputfile
+        #  if our_arguments.csv:
         df.to_csv(outputfile, index=None, encoding="utf-16", sep=",")
+
         LOGGER.info("Done!")
 
 if __name__ == "__main__":

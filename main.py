@@ -11,7 +11,9 @@ LOGGER = logging.getLogger(__name__)
 
 
 def arg_collection(args):
-    """This function is to collect the arguments from the user, includes help if help is triggered return help then exit"""
+    """This function is to collect the arguments
+        from the user, includes help if help is triggered
+        return help then exit"""
     
     parser = argparse.ArgumentParser(
         description="This script will take a list of names and output the status of the names"
@@ -82,7 +84,20 @@ def decoded_punycode(our_string):
         translate = elements[0].split("\'")[1]
     return translate
 
-
+# This function will capture data points for "OPENING" auctions
+# def open_state(x, traslate, state, reserved)
+#   """Capturing and Writing Data for "OPENING" State for {x}"""
+#   templst.append(translate)
+#   templst.append(state)
+#   templst.append(reserved)
+#   hoursuntilbidding = subprocess.getoutput(
+#   f"hsd-cli rpc getnameinfo {x}|jq .info.stats.hoursUntilBidding"
+#   )
+#   templst.append(hoursuntilbidding)
+#   templst.append("null")
+#   templst.append("null")
+#   templst.append("null")
+#   return templst
 def main(args):
     """Main function"""
 
@@ -122,15 +137,21 @@ def main(args):
         if is_punycode(x):
             translate = decoded_punycode(x)
         else:
-            translate = ("NA")
+            translate = (x)
+        # Pull hsd-cli rpc getnameinfo {x} and parse for state and reserved.
+        # Move this to one pull getnameinfo for each name
+        # and parse.
+        #
         state = subprocess.getoutput(
             f"hsd-cli rpc getnameinfo {x}|jq .info.state"
         )
         reserved = subprocess.getoutput(
             f"hsd-cli rpc getnameinfo {x}|jq .start.reserved"
         )
+        #
+        #
+        #
         if state == '"OPENING"':
-            # open
             templst.append(translate)
             templst.append(state)
             templst.append(reserved)
@@ -138,11 +159,17 @@ def main(args):
                 f"hsd-cli rpc getnameinfo {x}|jq .info.stats.hoursUntilBidding"
             )
             templst.append(hoursuntilbidding)
-            templst.append("null")
-            templst.append("null")
-            templst.append("null")
+            templst.append("")
+            templst.append("")
+            templst.append("")
             translated[x] = templst
             templst = []
+            #
+            #  remove above and uncomment below
+            # templst = open_state(x, translate, state, reserved):
+            # translated[x] = templst
+            # templst = []
+            #
         elif state == '"BIDDING"':
             templst.append(translate)
             templst.append(state)
@@ -150,10 +177,10 @@ def main(args):
             hoursuntilreveal = subprocess.getoutput(
                 f"hsd-cli rpc getnameinfo {x}|jq .info.stats.hoursUntilReveal"
             )
-            templst.append("null")
+            templst.append("")
             templst.append(hoursuntilreveal)
-            templst.append("null")
-            templst.append("null")
+            templst.append("")
+            templst.append("")
             translated[x] = templst
             templst = []
         elif state == '"REVEAL"':
@@ -163,10 +190,10 @@ def main(args):
             hoursuntilclose = subprocess.getoutput(
                 f"hsd-cli rpc getnameinfo {x}|jq .info.stats.hoursUntilClose"
             )
-            templst.append("null")
-            templst.append("null")
+            templst.append("")
+            templst.append("")
             templst.append(hoursuntilclose)
-            templst.append("null")
+            templst.append("")
             translated[x] = templst
             templst = []
         elif state == '"CLOSED"':
@@ -176,9 +203,9 @@ def main(args):
             daysuntilexpire = subprocess.getoutput(
                 f"hsd-cli rpc getnameinfo {x}|jq .info.stats.daysUntilExpire"
             )
-            templst.append("null")
-            templst.append("null")
-            templst.append("null")
+            templst.append("")
+            templst.append("")
+            templst.append("")
             templst.append(daysuntilexpire)
             translated[x] = templst
             templst = []
@@ -187,10 +214,10 @@ def main(args):
             templst.append(translate)
             templst.append(state)
             templst.append(reserved)
-            templst.append("null")
-            templst.append("null")
-            templst.append("null")
-            templst.append("null")
+            templst.append("")
+            templst.append("")
+            templst.append("")
+            templst.append("")
             translated[x] = templst
             templst = []
 

@@ -127,7 +127,7 @@ def main(args):
         reserved = subprocess.getoutput(
             f"""hsd-cli rpc getnameinfo {x}|jq .start.reserved"""
         )
-        if state == "OPENING":
+        if state == '"OPENING"':
             # open
             templst.append(translate)
             templst.append(state)
@@ -141,7 +141,7 @@ def main(args):
             templst.append("null")
             translated[x] = templst
             templst = []
-        elif state == "BIDDING":
+        elif state == '"BIDDING"':
             templst.append(translate)
             templst.append(state)
             templst.append(reserved)
@@ -154,7 +154,7 @@ def main(args):
             templst.append("null")
             translated[x] = templst
             templst = []
-        elif state == "REVEAL":
+        elif state == '"REVEAL"':
             templst.append(translate)
             templst.append(state)
             templst.append(reserved)
@@ -167,7 +167,7 @@ def main(args):
             templst.append("null")
             translated[x] = templst
             templst = []
-        elif state == "CLOSED":
+        elif state == '"CLOSED"':
             templst.append(translate)
             templst.append(state)
             templst.append(reserved)
@@ -182,7 +182,6 @@ def main(args):
             templst = []
         else:
             templst.append(translate)
-            templst.append(state)
             templst.append(reserved)
             templst.append("null")
             templst.append("null")

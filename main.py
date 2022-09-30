@@ -85,7 +85,7 @@ def decoded_punycode(our_string):
 
 
 def default_name_data(x):
-    """Run hsd-cli to capture state and reserved status of name"""
+    f"""Run hsd-cli to capture state and reserved status of {x}"""
     # in the future this will run once to capture each names data and parse from there
     # using hsd-cli rpc getnameinfo {x} --json
     state = subprocess.getoutput(
@@ -99,7 +99,7 @@ def default_name_data(x):
 
 # This function will capture data points for "OPENING" auctions
 def open_state(x, translate, state, reserved):
-    """Capturing and Writing Data for "OPENING" State for {x}"""
+    """Capturing and Writing Data for "OPENING" State"""
     templst = list()
     templst.append(translate)
     templst.append(state)
@@ -115,7 +115,7 @@ def open_state(x, translate, state, reserved):
 
 
 def bidding_state(x, translate, state, reserved):
-    """Capturing and Writing Data for "BIDDING" State for {x}"""
+    """Capturing and Writing Data for 'BIDDING'"""
     templst = list()
     templst.append(translate)
     templst.append(state)
@@ -131,7 +131,7 @@ def bidding_state(x, translate, state, reserved):
 
 
 def reveal_state(x, translate, state, reserved):
-    """Capturing and Writing Data for "REVEAL" State for {x}"""
+    """Capturing and Writing Data for "REVEAL" """
     templst = list()
     templst.append(translate)
     templst.append(state)
@@ -147,7 +147,7 @@ def reveal_state(x, translate, state, reserved):
 
 
 def closed_state(x, translate, state, reserved):
-    """Capturing and Writing Data for "CLOSED" State for {x}"""
+    """Capturing and Writing Data for "CLOSED" State"""
     templst = list()
     templst.append(translate)
     templst.append(state)
@@ -163,7 +163,7 @@ def closed_state(x, translate, state, reserved):
 
 
 def no_state(translate, state, reserved):
-    """Capturing and Writing Data for "NO STATE" State for {x}"""
+    """Capturing and Writing Data for "NO STATE" State"""
     templst = list()
     templst.append(translate)
     templst.append(state)
@@ -210,37 +210,44 @@ def main(args):
     translated = {}
     done = {}
     for x in data:
+        x = x.lower()
         if is_punycode(x):
+            LOGGER.debug(f"Testing {x} to determine if it is punycode")
             # if x is punycode decode it and store as translate or pass x to translate
+            """If Punycode DECODING"""
+            LOGGER.debug(f"Decoding punycode for {x} if punycode")
             translate = decoded_punycode(x)
         else:
+            LOGGER.debug(f"Writing {x} to translate, not punycode or incomplete punycode")
             translate = x
         # Capture default data for all names State and Reserved
+        LOGGER.debug(f"Calling default data capture for {x}")
         state, reserved = default_name_data(x)
         # for "OPENING" state
         if state == '"OPENING"':
+            LOGGER.debug(f"Calling open_state function for {x}")
             # call "OPENING" function
-            templst = open_state(x, translate, state, reserved)
-            translated[x] = templst
+            translated[x] = open_state(x, translate, state, reserved)
         # for "BIDDING" state
         elif state == '"BIDDING"':
+            LOGGER.debug(f"Calling bidding_state function for {x}")
             # call "BIDDING" function
-            templst = bidding_state(x, translate, state, reserved)
-            translated[x] = templst
+            translated[x] = bidding_state(x, translate, state, reserved)
         # for "REVEAL" state
         elif state == '"REVEAL"':
-            templst = reveal_state(x, translate, state, reserved)
-            translated[x] = templst
+            LOGGER.debug(f"Calling reveal_state function for {x}")
+            translated[x] = reveal_state(x, translate, state, reserved)
         # for "CLOSED" state
         elif state == '"CLOSED"':
+            LOGGER.debug(f"Calling closed_state function for {x}")
             # call "CLOSED" function
-            templst = closed_state(x, translate, state, reserved)
-            translated[x] = templst
-        # for all other stateor no data
+            translated[x] = closed_state(x, translate, state, reserved)
+        # for all other state or no data
         else:
+            LOGGER.debug(f"Calling no_state function for {x}")
             # for "NO STATE" or unknown states
-            templst = no_state(translate, state, reserved)
-            translated[x] = templst
+            translated[x] = no_state(translate, state, reserved)
+
     translated = {
         "name": translated.keys(),
         "decoded_punycode": [a[0] for a in translated.values()],
@@ -260,8 +267,6 @@ def main(args):
         nlst = []
 
         df = pd.DataFrame(done)
-        # if -c/--cvs is set write to csv outputfile
-        #  if our_arguments.csv:
         df.to_csv(outputfile, index=None, encoding="utf-16", sep=",")
 
         LOGGER.info("Done!")

@@ -1,6 +1,6 @@
 # NamerVS (Namer Validation Script)
 
-NamerdBin will take a list of names and output the status of the names
+NamerVS will take a list of names and output the status of the names
 
 ## Installation
 
